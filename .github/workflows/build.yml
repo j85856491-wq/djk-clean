@@ -1,31 +1,50 @@
 name: Build APK
 on:
+  workflow_dispatch:
   push:
-    branches: [ main, master ]
-  workflow_dispatch: {}
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Installer les dépendances système
+      - name: Dépendances système
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip python3-virtualenv \
+            autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 \
+            cmake libffi-dev libssl-dev automake autopoint gettext
 
-      - name: Installer Buildozer et Cython
+      - name: Java 17
         run: |
-          pip3 install --upgrade buildozer cython==0.29.36 virtualenv
+          sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+          sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
 
-      - name: Compiler l'APK avec Buildozer
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installer Buildozer
         run: |
-          yes | buildozer android debug
+          pip install --upgrade pip
+          pip install buildozer "cython==0.29.33" virtualenv
 
-      - name: Publier l'APK compilé
+      - name: Cache Buildozer
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.buildozer
+            .buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+
+      - name: Build
+        run: yes | buildozer -v android debug
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: djk-clean-apk
+          name: djk-cleaner-apk
           path: bin/*.apk
