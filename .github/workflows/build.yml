@@ -8,32 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    container:
+      image: kivy/kivy:latest
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
-      - name: Libérer de l'espace disque
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: Corriger les repositories APT
-        run: |
-          sudo add-apt-repository --remove -y ppa:openjdk-r/ppa || true
-          sudo rm -f /etc/apt/sources.list.d/*openjdk* || true
-          sudo apt-get update || true
-
       - name: Compiler l'APK avec Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+        run: buildozer android debug
 
       - name: Publier l'APK compilé
         uses: actions/upload-artifact@v4
         with:
           name: djk-clean-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
