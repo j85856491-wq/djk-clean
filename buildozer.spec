@@ -1,28 +1,16 @@
 [app]
-title = DJK Clean
-package.name = djkclean
-package.domain = org.djk
-
+title = DJK Cleaner
+package.name = djkcleaner
+package.domain = com.tondomaine
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas
-
-version = 0.1
-
-requirements = python3,kivy,pyjnius,plyer
-
+version = 1.0
+requirements = python3,kivy==2.3.1
 orientation = portrait
-fullscreen = 0
 
-# Permissions Android nécessaires
-android.permissions = READ_MEDIA_IMAGES,READ_MEDIA_VIDEO,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE
-
-android.api = 33
-android.minapi = 29
-android.ndk = 25b
+android.minapi = 21          # couvre Android 5.0+
+android.api = 34             # cible la dernière API (obligatoire pour publication Play Store)
+android.ndk_api = 21
 android.archs = arm64-v8a, armeabi-v7a
-
+android.permissions = READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, MANAGE_EXTERNAL_STORAGE
+android.enable_androidx = True
 android.accept_sdk_license = True
-
-[buildozer]
-log_level = 2
-warn_on_root = 1
