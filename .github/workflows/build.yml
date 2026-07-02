@@ -19,8 +19,13 @@ jobs:
           sudo rm -rf /usr/local/share/boost
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
+      - name: Corriger les repositories APT
+        run: |
+          sudo add-apt-repository --remove -y ppa:openjdk-r/ppa || true
+          sudo apt-get update || true
+
       - name: Compiler l'APK avec Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v2
+        uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
           command: buildozer android debug
@@ -31,4 +36,3 @@ jobs:
         with:
           name: djk-clean-apk
           path: ${{ steps.buildozer.outputs.filename }}
-          
