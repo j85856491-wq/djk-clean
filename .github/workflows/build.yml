@@ -22,6 +22,7 @@ jobs:
       - name: Corriger les repositories APT
         run: |
           sudo add-apt-repository --remove -y ppa:openjdk-r/ppa || true
+          sudo rm -f /etc/apt/sources.list.d/*openjdk* || true
           sudo apt-get update || true
 
       - name: Compiler l'APK avec Buildozer
